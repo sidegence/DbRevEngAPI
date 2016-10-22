@@ -1,0 +1,10 @@
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\DbRevEngAPI.Client.exe.config
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\obj\Debug\DbRevEngAPI.Client.csprojResolveAssemblyReference.cache
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\DbRevEngAPI.Client.exe
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\DbRevEngAPI.Client.pdb
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\DbRevEngAPI.dll
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\DbRevEngAPI.pdb
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\obj\Debug\DbRevEngAPI.Client.exe
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\obj\Debug\DbRevEngAPI.Client.pdb
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\Dapper.dll
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI.Client\bin\Debug\Dapper.xml

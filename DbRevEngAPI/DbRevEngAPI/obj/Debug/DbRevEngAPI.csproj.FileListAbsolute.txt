@@ -1,0 +1,7 @@
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\bin\Debug\DbRevEngAPI.dll
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\bin\Debug\DbRevEngAPI.pdb
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\bin\Debug\Dapper.dll
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\bin\Debug\Dapper.xml
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\obj\Debug\DbRevEngAPI.csprojResolveAssemblyReference.cache
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\obj\Debug\DbRevEngAPI.dll
+C:\sgGIT\DbRevEngAPI\DbRevEngAPI\DbRevEngAPI\obj\Debug\DbRevEngAPI.pdb
