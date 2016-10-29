@@ -15,36 +15,33 @@ namespace DbRevEngAPI.Client
         static void Main(string[] args)
         {
             var connectionStringSQLServer = ConfigurationManager.ConnectionStrings["SQLServer"].ConnectionString;
-            var api = new SqlServerApi(connectionStringSQLServer);
+            var sqlServerApi = new SqlServerApi(connectionStringSQLServer);
 
-            Console.WriteLine("\n api.Version()");
+            Console.WriteLine("\n sqlServerApi.Version()");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine(api.Version());
+            Console.WriteLine(sqlServerApi.Version());
 
-            Console.WriteLine("\n api.Databases()");
+            Console.WriteLine("\n sqlServerApi.Database(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in api.Databases())
+            Console.WriteLine(sqlServerApi.Database("master").ToString());
+
+            Console.WriteLine("\n sqlServerApi.Tables(master)");
+            Console.WriteLine("--------------------------------------------------------------------------------");
+            foreach (var item in sqlServerApi.Tables("master"))
             {
                 Console.WriteLine(item.ToString());
             }
 
-            Console.WriteLine("\n api.Tables(\"master\")");
+            Console.WriteLine("\n sqlServerApi.Columns(master,spt_monitor)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in api.Tables("master"))
+            foreach (var item in sqlServerApi.Columns("master", "spt_monitor"))
             {
                 Console.WriteLine(item.ToString());
             }
 
-            Console.WriteLine("\n api.Columns(\"master\", \"spt_monitor\")");
+            Console.WriteLine("\n sqlServerApi.StoredProcedures(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in api.Columns("master", "spt_monitor"))
-            {
-                Console.WriteLine(item.ToString());
-            }
-
-            Console.WriteLine("\n api.Columns(\"PixAlert.Licensing\", \"License\")");
-            Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in api.Columns("PixAlert.Licensing", "License"))
+            foreach (var item in sqlServerApi.StoredProcedures("master"))
             {
                 Console.WriteLine(item.ToString());
             }

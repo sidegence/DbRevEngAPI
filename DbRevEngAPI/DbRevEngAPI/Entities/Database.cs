@@ -11,9 +11,12 @@ namespace DbRevEngAPI.Entities
         public string Name { get; set; }
         public string Collation { get; set; }
 
+        public IEnumerable<Table> Tables { get; set; }
+        public IEnumerable<StoredProcedure> StoredProcedures { get; set; }
+
         public override string ToString()
         {
-            return string.Format("Name:{0} Collation:{1}", Name, Collation);
+            return string.Format("{0},{1},{2},{3}", Name, Collation, Tables, StoredProcedures);
         }
     }
 }

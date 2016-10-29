@@ -33,23 +33,56 @@ namespace DbRevEngAPI
 
         public override IEnumerable<Database> Databases()
         {
-            return _db.Query<Database>(@"
+            var results = _db.Query<Database>(@"
                 SELECT name 'Name', collation_name 'Collation'
                 FROM sys.databases            
             "
-            ).AsQueryable();
+            ).AsEnumerable();
+
+            foreach (var item in results)
+            {
+                item.Tables = Tables(item.Name);
+                item.StoredProcedures = StoredProcedures(item.Name);
+            }
+
+            return results;
+        }
+
+        public override Database Database(string dbName)
+        {
+            var result = _db.Query<Database>(string.Format(@"
+                SELECT name 'Name', collation_name 'Collation'
+                FROM sys.databases   
+                where name = '{0}'     
+            ", dbName)
+            ).FirstOrDefault();
+
+            if (!Checker.IsNullOrEmpty(result))
+            {
+                result.Tables = Tables(result.Name);
+                result.StoredProcedures = StoredProcedures(result.Name);
+            }
+
+            return result;
         }
 
         public override IEnumerable<Table> Tables(string dbName)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
-            return _db.Query<Table>(string.Format(@"
+            var results = _db.Query<Table>(string.Format(@"
                 select [name] 'Name', type 'Type'
                 from {0}.sys.objects
                 where [type] in ('U','V')          
             ", dbName)
-            ).AsQueryable();
+            ).AsEnumerable();
+
+            foreach (var item in results)
+            {
+                item.Columns = Columns(dbName, item.Name);
+            }
+
+            return results;
         }
 
         public override IEnumerable<Column> Columns(string dbName, string tableName)
@@ -88,6 +121,41 @@ namespace DbRevEngAPI
             }
 
             return results;
+        }
+
+        public override IEnumerable<StoredProcedure> StoredProcedures(string dbName)
+        {
+            dbName = CorrectBracketsOnTheDbObject(dbName);
+
+            var results = _db.Query<StoredProcedure>(string.Format(@"
+                select [name] 'Name', type 'Type'
+                from {0}.sys.objects
+                where [type] in ('P')          
+            ", dbName)
+            ).AsEnumerable();
+
+            foreach (var item in results)
+            {
+                item.Parameters = Parameters(dbName, item.Name);
+            }
+
+            return results;
+        }
+
+        public override IEnumerable<Parameter> Parameters(string dbName, string storedProcedure)
+        {
+            dbName = CorrectBracketsOnTheDbObject(dbName);
+
+            return _db.Query<Parameter>(string.Format(@"
+                select  
+                   parameter_id 'Ordinal',  
+                   name 'Name',  
+                   type_name(user_type_id) 'SQLType',  
+                   max_length 'SQLTypeSize' 
+                from sys.parameters p
+                where object_id = object_id('AddBatchRecord')
+                ", dbName)
+            ).AsEnumerable();
         }
     }
 }

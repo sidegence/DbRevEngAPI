@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseApi.cs" />
+    <Compile Include="Entities\Parameter.cs" />
+    <Compile Include="Entities\StoredProcedure.cs" />
     <Compile Include="SqlServerApi.cs" />
     <Compile Include="Entities\Column.cs" />
     <Compile Include="Entities\Table.cs" />

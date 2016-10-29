@@ -29,6 +29,11 @@ namespace DbRevEngAPI
             return null;
         }
 
+        public virtual Database Database(string dbName)
+        {
+            return null;
+        }
+
         public virtual IEnumerable<Database> Databases()
         {
             return null;
@@ -40,6 +45,16 @@ namespace DbRevEngAPI
         }
 
         public virtual IEnumerable<Column> Columns(string dbName, string tableName)
+        {
+            return null;
+        }
+
+        public virtual IEnumerable<StoredProcedure> StoredProcedures(string dbName)
+        {
+            return null;
+        }
+
+        public virtual IEnumerable<Parameter> Parameters(string dbName, string storedProcedure)
         {
             return null;
         }
