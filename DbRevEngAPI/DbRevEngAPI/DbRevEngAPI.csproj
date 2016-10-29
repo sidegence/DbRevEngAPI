@@ -44,10 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbRevEngAPI.cs" />
+    <Compile Include="BaseApi.cs" />
+    <Compile Include="SqlServerApi.cs" />
     <Compile Include="Entities\Column.cs" />
     <Compile Include="Entities\Table.cs" />
     <Compile Include="Entities\Database.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,24 +9,21 @@ using System.Threading.Tasks;
 using Dapper;
 
 using DbRevEngAPI.Entities;
+using System.Collections;
 
 namespace DbRevEngAPI
 {
-    public class DbRevEngAPI
+    public class SqlServerApi : BaseApi
     {
-        private readonly IDbConnection _db;
-
-        public DbRevEngAPI(IDbConnection db)
+        public SqlServerApi(IDbConnection db) : base (db)
         {
-            _db = db;
         }
 
-        public DbRevEngAPI(string connectionString)
+        public SqlServerApi(string connectionString) : base(connectionString)
         {
-            _db = new SqlConnection(connectionString);
         }
 
-        public string Version()
+        public override string Version()
         {
             return _db.Query<string>(@"
                 SELECT @@VERSION
@@ -34,7 +31,7 @@ namespace DbRevEngAPI
             ).FirstOrDefault();
         }
 
-        public IEnumerable<Database> Databases()
+        public override IEnumerable<Database> Databases()
         {
             return _db.Query<Database>(@"
                 SELECT name 'Name', collation_name 'Collation'
@@ -43,20 +40,24 @@ namespace DbRevEngAPI
             ).AsQueryable();
         }
 
-        public IEnumerable<Table> Tables(string dbName)
+        public override IEnumerable<Table> Tables(string dbName)
         {
+            dbName = CorrectBracketsOnTheDbObject(dbName);
+
             return _db.Query<Table>(string.Format(@"
-                select name 'Name', type 'Type'
+                select [name] 'Name', type 'Type'
                 from {0}.sys.objects
                 where [type] in ('U','V')          
             ", dbName)
             ).AsQueryable();
         }
 
-        public IEnumerable<Column> Columns(string dbName, string tableName)
+        public override IEnumerable<Column> Columns(string dbName, string tableName)
         {
-            return _db.Query<Column>(string.Format(@"
-                use [{0}];
+            dbName = CorrectBracketsOnTheDbObject(dbName);
+
+            var results = _db.Query<Column>(string.Format(@"
+                use {0};
                 select 
 	                c.column_id 'Ordinal', 
 	                c.name 'Name', 
@@ -64,8 +65,8 @@ namespace DbRevEngAPI
 	                c.is_identity 'IsIdentity', 
 	                t.name 'SQLType',  
 	                c.max_length 'SQLTypeSize', 
-	                case when fkc.parent_column_id is null then null else (select name from sys.objects where object_id=referenced_object_id) end 'FkTable', 
-	                case when fkc.parent_column_id is null then null else (select name from sys.columns where object_id=referenced_object_id and column_id=referenced_column_id) end 'FkColumn'
+	                case when fkc.parent_column_id is null then null else (select name from sys.objects where object_id=referenced_object_id) end 'FkTableName', 
+	                case when fkc.parent_column_id is null then null else (select name from sys.columns where object_id=referenced_object_id and column_id=referenced_column_id) end 'FkColumnName'
                 from sys.columns c
                 inner join sys.objects o on o.object_id=c.object_id and o.name='{1}'
                 inner join sys.types t on t.user_type_id=c.user_type_id
@@ -73,7 +74,20 @@ namespace DbRevEngAPI
                 left join sys.foreign_key_columns fkc on fkc.parent_object_id=o.object_id and fkc.parent_column_id=c.column_id
                 order by 1;
                 ", dbName, tableName)
-            ).AsQueryable();
+            ).AsEnumerable();
+
+            foreach (var item in results)
+            {
+                if (!Checker.IsNullOrEmpty(item.FkTableName))
+                {
+                    item.FkTable = Tables(dbName).Single(t => t.Name == item.FkTableName);
+
+                    if (!Checker.IsNullOrEmpty(item.FkColumnName))
+                        item.FkColumn = Columns(dbName, item.FkTableName).Single(c => c.Name == item.FkColumnName);
+                }
+            }
+
+            return results;
         }
     }
 }
