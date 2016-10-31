@@ -24,6 +24,11 @@ namespace DbRevEngAPI
             _db = new SqlConnection(connectionString);
         }
 
+        public virtual bool TestConnection()
+        {
+            return false;
+        }
+
         public virtual string Version()
         {
             return null;

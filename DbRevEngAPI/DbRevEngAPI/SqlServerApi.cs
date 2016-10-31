@@ -23,6 +23,22 @@ namespace DbRevEngAPI
         {
         }
 
+        public override bool TestConnection()
+        {
+            try
+            {
+                var result = _db.Query<int>(@"
+                    SELECT 1
+                "
+                ).Single();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public override string Version()
         {
             return _db.Query<string>(@"
@@ -38,12 +54,6 @@ namespace DbRevEngAPI
                 FROM sys.databases            
             "
             ).AsEnumerable();
-
-            foreach (var item in results)
-            {
-                item.Tables = Tables(item.Name);
-                item.StoredProcedures = StoredProcedures(item.Name);
-            }
 
             return results;
         }
@@ -71,8 +81,9 @@ namespace DbRevEngAPI
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
             var results = _db.Query<Table>(string.Format(@"
+                use {0};
                 select [name] 'Name', type 'Type'
-                from {0}.sys.objects
+                from sys.objects
                 where [type] in ('U','V')          
             ", dbName)
             ).AsEnumerable();
@@ -128,8 +139,9 @@ namespace DbRevEngAPI
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
             var results = _db.Query<StoredProcedure>(string.Format(@"
+                use {0};
                 select [name] 'Name', type 'Type'
-                from {0}.sys.objects
+                from sys.objects
                 where [type] in ('P')          
             ", dbName)
             ).AsEnumerable();
@@ -147,14 +159,15 @@ namespace DbRevEngAPI
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
             return _db.Query<Parameter>(string.Format(@"
+                use {0};
                 select  
                    parameter_id 'Ordinal',  
                    name 'Name',  
                    type_name(user_type_id) 'SQLType',  
                    max_length 'SQLTypeSize' 
                 from sys.parameters p
-                where object_id = object_id('AddBatchRecord')
-                ", dbName)
+                where object_id = object_id('{1}')
+                ", dbName, storedProcedure)
             ).AsEnumerable();
         }
     }

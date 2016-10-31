@@ -16,6 +16,16 @@ namespace DbRevEngAPI.Client
         {
             var connectionStringSQLServer = ConfigurationManager.ConnectionStrings["SQLServer"].ConnectionString;
             var sqlServerApi = new SqlServerApi(connectionStringSQLServer);
+            Console.WriteLine("\n qlServerApi(connectionStringSQLServer)");
+            Console.WriteLine("--------------------------------------------------------------------------------");
+            Console.WriteLine(connectionStringSQLServer);
+
+            var testConnection = sqlServerApi.TestConnection();
+            if (!testConnection)
+            {
+                Console.WriteLine("\n sqlServerApi.TestConnection() failed.");
+                Environment.Exit(0);
+            }
 
             Console.WriteLine("\n sqlServerApi.Version()");
             Console.WriteLine("--------------------------------------------------------------------------------");
