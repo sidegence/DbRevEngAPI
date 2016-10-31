@@ -10,7 +10,7 @@ using DbRevEngAPI.Entities;
 
 namespace DbRevEngAPI
 {
-    public abstract class BaseApi
+    public abstract class BaseApi : IDisposable
     {
         protected readonly IDbConnection _db;
 
@@ -22,6 +22,11 @@ namespace DbRevEngAPI
         public BaseApi(string connectionString)
         {
             _db = new SqlConnection(connectionString);
+        }
+
+        public void Dispose()
+        {
+            if (!Checker.IsNullOrEmpty(_db)) _db.Dispose();
         }
 
         public virtual bool TestConnection()

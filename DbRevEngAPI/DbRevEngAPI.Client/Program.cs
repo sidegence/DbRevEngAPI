@@ -33,7 +33,7 @@ namespace DbRevEngAPI.Client
 
             Console.WriteLine("\n sqlServerApi.Database(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine(sqlServerApi.Database("master").ToString());
+            Console.WriteLine(sqlServerApi.Database("PixAlert.Licensing").ToString());
 
             Console.WriteLine("\n sqlServerApi.Tables(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");

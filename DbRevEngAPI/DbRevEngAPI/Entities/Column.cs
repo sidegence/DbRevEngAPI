@@ -14,25 +14,22 @@ namespace DbRevEngAPI.Entities
         public int IsIdentity { get; set; }
         public string SQLType { get; set; }
         public int SQLTypeSize { get; set; }
-        public string FkTableName { get; set; }
+        public string FkTable { get; set; }
         public string FkColumnName { get; set; }
-
-        public Table FkTable { get; set; }
         public Column FkColumn { get; set; }
 
         public override string ToString()
         {
             return string.Format(
-                "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, [{8}], [{9}]",
+                "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, [{8}]",
                 Ordinal,
                 Name, 
                 IsPrimaryKey, 
                 IsIdentity, 
                 SQLType, 
                 SQLTypeSize,
-                FkTableName,
+                FkTable,
                 FkColumnName,
-                Checker.IsNullOrEmpty(FkTable) ? "" : FkTable.ToString(),
                 Checker.IsNullOrEmpty(FkColumn) ? "" : FkColumn.ToString()
             );
         }

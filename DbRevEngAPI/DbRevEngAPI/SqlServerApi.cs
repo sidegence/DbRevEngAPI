@@ -122,13 +122,9 @@ namespace DbRevEngAPI
 
             foreach (var item in results)
             {
-                if (!Checker.IsNullOrEmpty(item.FkTableName))
-                {
-                    item.FkTable = Tables(dbName).Single(t => t.Name == item.FkTableName);
-
+                if (!Checker.IsNullOrEmpty(item.FkTable))
                     if (!Checker.IsNullOrEmpty(item.FkColumnName))
-                        item.FkColumn = Columns(dbName, item.FkTableName).Single(c => c.Name == item.FkColumnName);
-                }
+                        item.FkColumn = Columns(dbName, item.FkTable).Single(c => c.Name == item.FkColumnName);
             }
 
             return results;
