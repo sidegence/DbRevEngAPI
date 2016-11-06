@@ -82,9 +82,10 @@ namespace DbRevEngAPI
 
             var results = _db.Query<Table>(string.Format(@"
                 use {0};
-                select [name] 'Name', type 'Type'
-                from sys.objects
-                where [type] in ('U','V')          
+                select s.name 'Schema', o.name 'Name', o.type 'Type'
+                from sys.objects o
+                inner join sys.schemas s on s.schema_id=o.schema_id
+                where o.type in ('U','V')          
             ", dbName)
             ).AsEnumerable();
 
@@ -104,16 +105,21 @@ namespace DbRevEngAPI
                 use {0};
                 select 
 	                c.column_id 'Ordinal', 
+					s.name 'Schema',
 	                c.name 'Name', 
 	                case when ic.column_id is null then 0 else 1 end 'IsPrimaryKey',
 	                c.is_identity 'IsIdentity', 
+					c.is_nullable 'IsNullable',
 	                t.name 'SQLType',  
 	                c.max_length 'SQLTypeSize', 
+	                c.precision 'SQLTypePrecision', 
+	                c.scale 'SQLTypeScale', 
 	                case when fkc.parent_column_id is null then null else (select name from sys.objects where object_id=referenced_object_id) end 'FkTableName', 
 	                case when fkc.parent_column_id is null then null else (select name from sys.columns where object_id=referenced_object_id and column_id=referenced_column_id) end 'FkColumnName'
                 from sys.columns c
                 inner join sys.objects o on o.object_id=c.object_id and o.name='{1}'
                 inner join sys.types t on t.user_type_id=c.user_type_id
+                inner join sys.schemas s on s.schema_id=o.schema_id
                 left join sys.index_columns ic on ic.object_id=c.object_id and ic.column_id=c.column_id
                 left join sys.foreign_key_columns fkc on fkc.parent_object_id=o.object_id and fkc.parent_column_id=c.column_id
                 order by 1;
@@ -122,9 +128,9 @@ namespace DbRevEngAPI
 
             foreach (var item in results)
             {
-                if (!Checker.IsNullOrEmpty(item.FkTable))
+                if (!Checker.IsNullOrEmpty(item.FkTableName))
                     if (!Checker.IsNullOrEmpty(item.FkColumnName))
-                        item.FkColumn = Columns(dbName, item.FkTable).Single(c => c.Name == item.FkColumnName);
+                        item.FkColumn = Columns(dbName, item.FkTableName).Single(c => c.Name == item.FkColumnName);
             }
 
             return results;

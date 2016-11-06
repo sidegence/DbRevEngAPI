@@ -33,7 +33,7 @@ namespace DbRevEngAPI.Client
 
             Console.WriteLine("\n sqlServerApi.Database(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine(sqlServerApi.Database("PixAlert.Licensing").ToString());
+            Console.WriteLine(sqlServerApi.Database("master").ToString());
 
             Console.WriteLine("\n sqlServerApi.Tables(master)");
             Console.WriteLine("--------------------------------------------------------------------------------");
@@ -42,9 +42,9 @@ namespace DbRevEngAPI.Client
                 Console.WriteLine(item.ToString());
             }
 
-            Console.WriteLine("\n sqlServerApi.Columns(master,spt_monitor)");
+            Console.WriteLine("\n sqlServerApi.Columns(master,spt_fallback_dev)");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in sqlServerApi.Columns("master", "spt_monitor"))
+            foreach (var item in sqlServerApi.Columns("master", "spt_fallback_dev"))
             {
                 Console.WriteLine(item.ToString());
             }

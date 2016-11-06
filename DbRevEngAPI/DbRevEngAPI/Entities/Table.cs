@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace DbRevEngAPI.Entities
 {
     public class Table
     {
+        public string Schema { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
 
@@ -15,12 +17,7 @@ namespace DbRevEngAPI.Entities
 
         public override string ToString()
         {
-            return string.Format(
-                "{0},{1},{2}", 
-                Name,
-                Type,
-                Columns.ToString()
-            );
+            return JsonConvert.SerializeObject(this);
         }
     }
 }
