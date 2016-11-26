@@ -27,10 +27,7 @@ namespace DbRevEngAPI
         {
             try
             {
-                var result = _db.Query<int>(@"
-                    SELECT 1
-                "
-                ).Single();
+                var result = _db.Query<int>(@"SELECT 1").Single();
                 return true;
             }
             catch (Exception)
@@ -41,10 +38,7 @@ namespace DbRevEngAPI
 
         public override string Version()
         {
-            return _db.Query<string>(@"
-                SELECT @@VERSION
-            "
-            ).FirstOrDefault();
+            return _db.Query<string>(@"SELECT @@VERSION").FirstOrDefault();
         }
 
         public override IEnumerable<Database> Databases()
@@ -58,7 +52,7 @@ namespace DbRevEngAPI
             return results;
         }
 
-        public override Database Database(string dbName)
+        public override Database Database(string dbName, string tableNamePattern, string procedureNamePattern)
         {
             var result = _db.Query<Database>(string.Format(@"
                 SELECT name 'Name', collation_name 'Collation'
@@ -67,27 +61,28 @@ namespace DbRevEngAPI
             ", dbName)
             ).FirstOrDefault();
 
-            if (!Checker.IsNullOrEmpty(result))
-            {
-                result.Tables = Tables(result.Name);
-                result.StoredProcedures = StoredProcedures(result.Name);
-            }
+            if (!Checker.IsNullOrEmpty(tableNamePattern))
+                result.Tables = Tables(result.Name, tableNamePattern);
+
+            if (!Checker.IsNullOrEmpty(procedureNamePattern))
+                result.StoredProcedures = StoredProcedures(result.Name, procedureNamePattern);
 
             return result;
         }
 
-        public override IEnumerable<Table> Tables(string dbName)
+        public override IEnumerable<Table> Tables(string dbName, string tableNamePattern)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
-            var results = _db.Query<Table>(string.Format(@"
+            var sql = string.Format(@"
                 use {0};
                 select s.name 'Schema', o.name 'Name', o.type 'Type'
                 from sys.objects o
                 inner join sys.schemas s on s.schema_id=o.schema_id
-                where o.type in ('U','V')          
-            ", dbName)
-            ).AsEnumerable();
+                where o.type in ('U','V') and o.name like '{1}'       
+            ", dbName, tableNamePattern);
+
+            var results = _db.Query<Table>(sql).AsEnumerable();
 
             foreach (var item in results)
             {
@@ -136,27 +131,32 @@ namespace DbRevEngAPI
             return results;
         }
 
-        public override IEnumerable<StoredProcedure> StoredProcedures(string dbName)
+        public override IEnumerable<StoredProcedure> StoredProcedures(string dbName, string procedureNamePattern)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
             var results = _db.Query<StoredProcedure>(string.Format(@"
                 use {0};
-                select [name] 'Name', type 'Type'
+                select SCHEMA_NAME(schema_id) 'Schema', [name] 'Name', type 'Type'
                 from sys.objects
-                where [type] in ('P')          
-            ", dbName)
+                where [type] in ('P') and [name] like '{1}'           
+            ", dbName, procedureNamePattern)
             ).AsEnumerable();
 
             foreach (var item in results)
             {
-                item.Parameters = Parameters(dbName, item.Name);
+                item.Parameters = Parameters(dbName, item);
+            }
+
+            foreach (var item in results)
+            {
+                item.ResultColumns = ResultColumns(dbName, item);
             }
 
             return results;
         }
 
-        public override IEnumerable<Parameter> Parameters(string dbName, string storedProcedure)
+        public override IEnumerable<Parameter> Parameters(string dbName, StoredProcedure storedProcedure)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
@@ -166,11 +166,37 @@ namespace DbRevEngAPI
                    parameter_id 'Ordinal',  
                    name 'Name',  
                    type_name(user_type_id) 'SQLType',  
-                   max_length 'SQLTypeSize' 
+                   max_length 'SQLTypeSize',
+				   is_output 'IsOutput',
+				   has_default_value 'HasDefaultValue',
+				   default_value 'DefaultValue'
                 from sys.parameters p
                 where object_id = object_id('{1}')
-                ", dbName, storedProcedure)
+                ", dbName, storedProcedure.Name)
             ).AsEnumerable();
+        }
+
+        public override IEnumerable<ResultColumn> ResultColumns(string dbName, StoredProcedure storedProcedure)
+        {
+            dbName = CorrectBracketsOnTheDbObject(dbName);
+
+            var sql = string.Format(@"
+                use {0};
+                select  
+                   p.column_ordinal 'Ordinal',  
+                   case when p.name is null then 'ReturnValue' else p.name end 'Name',  
+                   type_name(p.system_type_id) 'SQLType',  
+                   p.max_length 'SQLTypeSize',
+				   p.source_schema 'SourceSchema',
+				   p.source_table 'SourceTable',
+				   p.source_column 'SourceColumn'
+                from 
+                    (SELECT * FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID('{1}'), 1)) p
+                where 
+                    p.error_message IS NULL
+                ", dbName, storedProcedure.Name);
+
+            return _db.Query<ResultColumn>(sql).AsEnumerable();
         }
     }
 }

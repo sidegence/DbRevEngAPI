@@ -8,19 +8,11 @@ namespace DbRevEngAPI.Entities
 {
     public class StoredProcedure
     {
+        public string Schema { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
 
         public IEnumerable<Parameter> Parameters { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format(
-                "{0}, {1}, [{2}]", 
-                Name,
-                Type,
-                Parameters.Select(_=>_.ToString())
-            );
-        }
+        public IEnumerable<ResultColumn> ResultColumns { get; set; }
     }
 }

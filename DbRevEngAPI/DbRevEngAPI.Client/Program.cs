@@ -14,11 +14,13 @@ namespace DbRevEngAPI.Client
     {
         static void Main(string[] args)
         {
+            var dbName = "master";
             var connectionStringSQLServer = ConfigurationManager.ConnectionStrings["SQLServer"].ConnectionString;
             var sqlServerApi = new SqlServerApi(connectionStringSQLServer);
             Console.WriteLine("\n qlServerApi(connectionStringSQLServer)");
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(connectionStringSQLServer);
+            Console.WriteLine("dbName:"+dbName);
 
             var testConnection = sqlServerApi.TestConnection();
             if (!testConnection)
@@ -31,29 +33,23 @@ namespace DbRevEngAPI.Client
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(sqlServerApi.Version());
 
-            Console.WriteLine("\n sqlServerApi.Database(master)");
+            var database = sqlServerApi.Database(dbName, "%", "%");
+            Console.WriteLine("\n sqlServerApi.Database(dbName, \"%\", \"%\")");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine(sqlServerApi.Database("master").ToString());
+            Console.WriteLine(database.ToString());
 
-            Console.WriteLine("\n sqlServerApi.Tables(master)");
+            Console.WriteLine("\n database.Tables()");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in sqlServerApi.Tables("master"))
+            foreach (var item in database.Tables)
             {
                 Console.WriteLine(item.ToString());
             }
 
-            Console.WriteLine("\n sqlServerApi.Columns(master,spt_fallback_dev)");
+            Console.WriteLine("\n database.StoredProcedures()");
             Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in sqlServerApi.Columns("master", "spt_fallback_dev"))
+            foreach (var item in database.StoredProcedures)
             {
-                Console.WriteLine(item.ToString());
-            }
-
-            Console.WriteLine("\n sqlServerApi.StoredProcedures(master)");
-            Console.WriteLine("--------------------------------------------------------------------------------");
-            foreach (var item in sqlServerApi.StoredProcedures("master"))
-            {
-                Console.WriteLine(item.ToString());
+                Console.WriteLine(item.Name+" p:"+item.Parameters.Count()+" r:"+item.ResultColumns.Count());
             }
 
             Console.ReadKey();
