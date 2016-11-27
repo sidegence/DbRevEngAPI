@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,11 @@ namespace DbRevEngAPI.Entities
         public bool IsOutput { get; set; }
         public bool HasDefaultValue { get; set; }
         public string DefaultValue { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 
     public class ResultColumn
@@ -26,5 +32,10 @@ namespace DbRevEngAPI.Entities
         public string SourceSchema { get; set; }
         public string SourceTable { get; set; }
         public string SourceColumn { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

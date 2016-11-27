@@ -39,7 +39,11 @@ namespace DbRevEngAPI
             return null;
         }
 
-        public virtual Database Database(string dbName, string tableNamePattern, string procedureNamePattern)
+        public virtual Database Database(
+            string dbName, 
+            string tableNamePattern, string tableNameExceptPattern, 
+            string procedureNamePattern, string procedureNameExceptPattern
+        )
         {
             return null;
         }
@@ -49,7 +53,7 @@ namespace DbRevEngAPI
             return null;
         }
 
-        public virtual IEnumerable<Table> Tables(string dbName, string tableNamePattern)
+        public virtual IEnumerable<Table> Tables(string dbName, string tableNamePattern, string tableNameExceptPattern)
         {
             return null;
         }
@@ -59,7 +63,7 @@ namespace DbRevEngAPI
             return null;
         }
 
-        public virtual IEnumerable<StoredProcedure> StoredProcedures(string dbName, string procedureNamePattern)
+        public virtual IEnumerable<StoredProcedure> StoredProcedures(string dbName, string procedureNamePattern, string procedureNameExceptPattern)
         {
             return null;
         }

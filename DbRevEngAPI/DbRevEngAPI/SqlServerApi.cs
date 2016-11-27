@@ -52,7 +52,11 @@ namespace DbRevEngAPI
             return results;
         }
 
-        public override Database Database(string dbName, string tableNamePattern, string procedureNamePattern)
+        public override Database Database(
+            string dbName,
+            string tableNamePattern, string tableNameExceptPattern,
+            string procedureNamePattern, string procedureNameExceptPattern
+        )
         {
             var result = _db.Query<Database>(string.Format(@"
                 SELECT name 'Name', collation_name 'Collation'
@@ -62,15 +66,15 @@ namespace DbRevEngAPI
             ).FirstOrDefault();
 
             if (!Checker.IsNullOrEmpty(tableNamePattern))
-                result.Tables = Tables(result.Name, tableNamePattern);
+                result.Tables = Tables(result.Name, tableNamePattern, tableNameExceptPattern);
 
             if (!Checker.IsNullOrEmpty(procedureNamePattern))
-                result.StoredProcedures = StoredProcedures(result.Name, procedureNamePattern);
+                result.StoredProcedures = StoredProcedures(result.Name, procedureNamePattern, procedureNameExceptPattern);
 
             return result;
         }
 
-        public override IEnumerable<Table> Tables(string dbName, string tableNamePattern)
+        public override IEnumerable<Table> Tables(string dbName, string tableNamePattern, string tableNameExceptPattern)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
@@ -79,8 +83,8 @@ namespace DbRevEngAPI
                 select s.name 'Schema', o.name 'Name', o.type 'Type'
                 from sys.objects o
                 inner join sys.schemas s on s.schema_id=o.schema_id
-                where o.type in ('U','V') and o.name like '{1}'       
-            ", dbName, tableNamePattern);
+                where o.type in ('U','V') and o.name like '{1}' and o.name not like '{2}'   
+            ", dbName, tableNamePattern, tableNameExceptPattern);
 
             var results = _db.Query<Table>(sql).AsEnumerable();
 
@@ -131,7 +135,7 @@ namespace DbRevEngAPI
             return results;
         }
 
-        public override IEnumerable<StoredProcedure> StoredProcedures(string dbName, string procedureNamePattern)
+        public override IEnumerable<StoredProcedure> StoredProcedures(string dbName, string procedureNamePattern, string procedureNameExceptPattern)
         {
             dbName = CorrectBracketsOnTheDbObject(dbName);
 
@@ -139,8 +143,8 @@ namespace DbRevEngAPI
                 use {0};
                 select SCHEMA_NAME(schema_id) 'Schema', [name] 'Name', type 'Type'
                 from sys.objects
-                where [type] in ('P') and [name] like '{1}'           
-            ", dbName, procedureNamePattern)
+                where [type] in ('P') and [name] like '{1}' and [name] not like '{2}'           
+            ", dbName, procedureNamePattern, procedureNameExceptPattern)
             ).AsEnumerable();
 
             foreach (var item in results)

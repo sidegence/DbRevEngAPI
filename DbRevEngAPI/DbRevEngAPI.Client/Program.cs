@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 
 using DbRevEngAPI;
+using System.Data;
 
 namespace DbRevEngAPI.Client
 {
@@ -20,7 +21,7 @@ namespace DbRevEngAPI.Client
             Console.WriteLine("\n qlServerApi(connectionStringSQLServer)");
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(connectionStringSQLServer);
-            Console.WriteLine("dbName:"+dbName);
+            Console.WriteLine("dbName:" + dbName);
 
             var testConnection = sqlServerApi.TestConnection();
             if (!testConnection)
@@ -33,7 +34,7 @@ namespace DbRevEngAPI.Client
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(sqlServerApi.Version());
 
-            var database = sqlServerApi.Database(dbName, "%", "%");
+            var database = sqlServerApi.Database(dbName, "%", "%Entity%", "%", "%sp_%");
             Console.WriteLine("\n sqlServerApi.Database(dbName, \"%\", \"%\")");
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(database.ToString());
@@ -49,7 +50,16 @@ namespace DbRevEngAPI.Client
             Console.WriteLine("--------------------------------------------------------------------------------");
             foreach (var item in database.StoredProcedures)
             {
-                Console.WriteLine(item.Name+" p:"+item.Parameters.Count()+" r:"+item.ResultColumns.Count());
+                Console.WriteLine(item.Name + " p:" + item.Parameters.Count() + " r:" + item.ResultColumns.Count());
+            }
+
+            Console.WriteLine("\n TypeConvertor");
+            Console.WriteLine("--------------------------------------------------------------------------------");
+
+            foreach (var sqlDbType in Enum.GetValues(typeof(SqlDbType)).Cast<SqlDbType>())
+            {
+                var typeMapElelment = TypeConvertor.Find(sqlDbType);
+                Console.WriteLine(typeMapElelment.DbType + " | " + sqlDbType.ToString() + " | " + typeMapElelment.Type.Name + " | " + typeMapElelment.CsSampleData());
             }
 
             Console.ReadKey();
