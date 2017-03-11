@@ -15,12 +15,14 @@ namespace DbRevEngAPI.Client
     {
         static void Main(string[] args)
         {
-            var dbName = "master";
             var connectionStringSQLServer = ConfigurationManager.ConnectionStrings["SQLServer"].ConnectionString;
             var sqlServerApi = new SqlServerApi(connectionStringSQLServer);
             Console.WriteLine("\n qlServerApi(connectionStringSQLServer)");
             Console.WriteLine("--------------------------------------------------------------------------------");
             Console.WriteLine(connectionStringSQLServer);
+
+            var builder = new SqlConnectionStringBuilder(connectionStringSQLServer);
+            var dbName = builder.InitialCatalog;
             Console.WriteLine("dbName:" + dbName);
 
             var testConnection = sqlServerApi.TestConnection();
@@ -43,7 +45,7 @@ namespace DbRevEngAPI.Client
             Console.WriteLine("--------------------------------------------------------------------------------");
             foreach (var item in database.Tables)
             {
-                Console.WriteLine(item.ToString());
+                Console.WriteLine(item.ToString()+"\n");
             }
 
             Console.WriteLine("\n database.StoredProcedures()");

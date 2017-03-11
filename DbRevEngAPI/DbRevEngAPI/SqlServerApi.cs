@@ -119,7 +119,8 @@ namespace DbRevEngAPI
                 inner join sys.objects o on o.object_id=c.object_id and o.name='{1}'
                 inner join sys.types t on t.user_type_id=c.user_type_id
                 inner join sys.schemas s on s.schema_id=o.schema_id
-                left join sys.index_columns ic on ic.object_id=c.object_id and ic.column_id=c.column_id
+				left join sys.indexes i on i.object_id=c.object_id and i.is_primary_key=1
+					left join sys.index_columns ic on ic.object_id=i.object_id and ic.index_id = i.index_id and ic.column_id=c.column_id
                 left join sys.foreign_key_columns fkc on fkc.parent_object_id=o.object_id and fkc.parent_column_id=c.column_id
                 order by 1;
                 ", dbName, tableName)
