@@ -28,15 +28,15 @@ namespace DbRevEngAPI
                     case "Byte[]": return "new byte[] {" + Random.Next(0, 256).ToString() + "}";
                     case "Boolean": return (Random.NextDouble() >= 0.5).ToString().ToLower();
                     case "String": return "\"" + Guid.NewGuid().ToString().Substring(0, 1) + "\"";
-                    case "DateTime": return "new DateTime(" + ((long)(Random.NextDouble() * DateTime.MaxValue.Ticks)).ToString() + ")";
-                    case "DateTimeOffset": return "new DateTimeOffset(new DateTime(" + ((long)(Random.NextDouble() * DateTime.MaxValue.Ticks)).ToString() + "))";
+                    case "DateTime": return "new DateTime(" + DateTime.Now.Ticks.ToString() + ")";
+                    case "DateTimeOffset": return "new DateTimeOffset(new DateTime(" + DateTime.Now.Ticks.ToString() + "))";
                     case "Decimal": return string.Format("new decimal({0},{1},{2},{3},(byte)({4}))", Random.Next(Int32.MinValue, Int32.MaxValue), Random.Next(Int32.MinValue, Int32.MaxValue), Random.Next(Int32.MinValue, Int32.MaxValue), (Random.NextDouble() >= 0.5).ToString().ToLower(), Random.Next(0, 28));
                     case "Double": return (Random.NextDouble() * Double.MaxValue).ToString().Replace(",", ".") + "d";
                     case "Int32": return Random.Next(Int32.MinValue, Int32.MaxValue).ToString();
                     case "Byte": return "(byte)(" + Random.Next(0, 256).ToString() + ")";
                     case "Single": return (Random.NextDouble() * Single.MaxValue).ToString().Replace(",",".") + "f";
                     case "Int16": return Random.Next(Int16.MinValue, Int16.MaxValue).ToString();
-                    case "TimeSpan": return "new TimeSpan(" + ((long)(Random.NextDouble() * DateTime.MaxValue.Ticks)).ToString() + ")";
+                    case "TimeSpan": return "new TimeSpan(" + DateTime.Now.Ticks.ToString() + ")";
                     case "Guid": return "new Guid(\"" + Guid.NewGuid().ToString() + "\")";
                     case "Object": return "null";
 
